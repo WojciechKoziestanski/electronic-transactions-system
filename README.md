@@ -5,6 +5,8 @@ Pierwsza faza budowy systemu transakcyjnego w Pythonie.
 * FastAPI
 * Pydantic
 * Uvicorn
+* SQLAlchemy 2.0
+* SQLite + aiosqlite
 
 ## Status
-Obecnie zaimplementowana walidacja modeli oraz tymczasowa baza danych w pamięci RAM (in-memory).
+Zaimplementowano architekturę bazy danych. System korzysta z **asynchronicznego silnika SQLAlchemy** oraz modeli ORM (`UserTable`, `TransactionTable`). Baza danych została przeniesiona z pamięci RAM do trwałego pliku SQLite (`finance.db`).
