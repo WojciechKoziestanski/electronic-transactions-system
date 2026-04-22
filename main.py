@@ -1,11 +1,23 @@
 from fastapi import FastAPI, HTTPException
 from models import User, Transaction
 from typing import List
-
-app = FastAPI()
+from database import init_db
+from contextlib import asynccontextmanager
 
 users_db: dict[int, User] = {}
 transactions_db: dict[int, Transaction] = {}
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("Log: Rozpoczynam inicjalizację bazy danych...")
+    await init_db()
+    print("Log: Baza danych gotowa, tabele sprawdzone/stworzone.")
+    yield
+    print("Log: Zamykanie aplikacji...")
+
+app = FastAPI(
+    title="FinTech API",
+    lifespan=lifespan)
 
 @app.post("/user")
 def create_user(new_user: User):
