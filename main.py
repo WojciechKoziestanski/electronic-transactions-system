@@ -1,8 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from datetime import datetime
+
+from fastapi import FastAPI, HTTPException, APIRouter, Depends
 from models import User, Transaction
 from typing import List
 from database import init_db
 from contextlib import asynccontextmanager
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import AsyncSession
+from database import get_db
 
 users_db: dict[int, User] = {}
 transactions_db: dict[int, Transaction] = {}
@@ -43,3 +48,19 @@ def create_transaction(new_transaction: Transaction):
 @app.get("/transaction")
 def get_transactions():
     return transactions_db
+
+@app.get("/health")
+async def health_check(db: AsyncSession = Depends(get_db)):
+    try:
+        await db.execute(text("SELECT 1"))
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.utcnow()
+        }
+    except Exception as e:
+        return {
+            "status": "unhealthy",
+            "database": "disconnected",
+            "error": str(e)
+        }
